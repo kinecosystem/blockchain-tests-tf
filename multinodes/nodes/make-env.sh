@@ -49,5 +49,5 @@ echo "sudo chown ubuntu:ubuntu /data/prometheus/make-conf.sh" >> prometheus-env
 echo "sudo chown /data/prometheus/prometheus.yml.TMPL" >> prometheus-env
 echo "sudo chown /data/prometheus/prometheus.yml.TMPL2" >> prometheus-env
 echo  "cp /data/prometheus/prometheus.yml.TMPL2 /data/prometheus/prometheus.yml.TMPL" >> prometheus-env 
-echo  "sudo bash /data/prometheus/make-conf.sh $1 " >> prometheus-env
+echo  "bash /data/prometheus/make-conf.sh $1 " >> prometheus-env
 
