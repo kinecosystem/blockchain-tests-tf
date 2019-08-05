@@ -44,5 +44,5 @@ done
 
 #Prometheus init
 echo "#!/bin/bash" >> prometheus-env
-echo  "bash /data/prometheus/make-conf.sh $1 " >> prometheus-env
+echo  "bash /data/prometheus/make-conf.sh $1" >> prometheus-env
 
