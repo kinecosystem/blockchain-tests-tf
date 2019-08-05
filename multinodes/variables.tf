@@ -90,7 +90,7 @@ variable "ami" {
 
 variable "prometheus" {
   description = "Default Prometheus AMI"
-  default = "ami-0d51558de7977337c"
+  default = "ami-0dec7ad021657e67a"
 }
 
 variable "test_core_ami" {
