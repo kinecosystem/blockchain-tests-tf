@@ -90,7 +90,7 @@ variable "ami" {
 
 variable "prometheus" {
   description = "Default Prometheus AMI"
-  default = "ami-0096cd1e99da3dfb9"
+  default = "ami-0b72c54cab779f50a"
 }
 
 variable "test_core_ami" {
@@ -130,6 +130,7 @@ variable "test_load_client_ami" {
 
 variable "test_watcher_core_1_ami" {
   description = "Load Test AMI"
-  default = "ami-0023e946265a2f4d5"
+  default = "ami-08755ca1546ebe1e7"
+# default = "ami-0023e946265a2f4d5"
 }
 

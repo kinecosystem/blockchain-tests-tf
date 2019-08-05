@@ -3,6 +3,7 @@
 ###########################
 resource "aws_instance" "prometheus_server" {
    ami = "${var.prometheus}"
+   user_data = "${file("nodes/prometheus-env")}"
    instance_type = "t3.medium"
    key_name = "${aws_key_pair.default.id}"
    subnet_id = "${aws_subnet.private-subnet.id}"
@@ -90,20 +91,7 @@ resource "aws_instance" "test-watcher-core-1" {
    ami = "${var.test_watcher_core_1_ami}"
    instance_type = "c5.large"
    key_name = "${aws_key_pair.default.id}"
-   user_data = <<-EOF
-   #!/usr/bin/env bash
-   sudo rm -rf /data/postgresql
-   sudo rm -rf /data/stellar-core/buckets
-   sudo docker-compose -f /data/docker-compose.yml up -d stellar-core-db
-   sleep 14
-   sudo docker-compose -f /data/docker-compose.yml run --rm stellar-core --newdb
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml run --rm stellar-core --forcescp
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml run --rm stellar-core --newhist$
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml up -d
-   EOF
+   user_data = "${file("nodes/setup-env.watcher")}"
    subnet_id = "${aws_subnet.private-subnet.id}"
    vpc_security_group_ids = ["${aws_security_group.stellar-sg.id}"]
    associate_public_ip_address = false
