@@ -1,6 +1,7 @@
 #########################
 # Terraform Node Config #
 #########################
+//todo: get passwords from vault/ssm/other
 
 NODENAME = "nodename"
 SUFFIX = "nd37"

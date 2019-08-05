@@ -64,6 +64,15 @@ resource "aws_security_group" "stellar-sg" {
     #security_groups = ["${aws_security_group.bastion-sg.id}"]
   }
 
+    ingress {
+    from_port = -1
+    to_port = -1
+    protocol = "-1"
+    security_groups = ["${aws_security_group.stellar-sg}"]
+    description = "Allow Access within the SG"
+
+  }
+
   egress {
     from_port = 443
     to_port = 443
@@ -136,6 +145,15 @@ resource "aws_security_group" "stellar-sg" {
     cidr_blocks = ["0.0.0.0/0"]
     #security_groups = ["${aws_security_group.bastion-sg.id}"]
     #description = "ssh connection Bastion"
+  }
+
+  egress {
+    from_port = -1
+    to_port = -1
+    protocol = "-1"
+    security_groups = ["${aws_security_group.stellar-sg}"]
+    description = "Allow Access within the SG"
+
   }
 
 

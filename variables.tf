@@ -16,7 +16,7 @@ variable "VPC_CIDR" {
   description = "Unique CIDR for VPC"
   default = "172.32"
 }
-
+//todo: get passwords from vault/ssm/other
 variable "DB_USER" { default = "stellar" }
 variable "DB_PASS" { default = "defaultpassword" }
 variable "DB_NAME" { default = "core" }
@@ -47,6 +47,11 @@ variable "key_path" {
 
 variable "aws_region" {
   description = "Region for the VPC"
+}
+
+variable "profile" {
+  description = "AWS profile"
+  default = "default"
 }
 
 #######################
@@ -93,30 +98,11 @@ variable "prometheus" {
   default = "ami-0096cd1e99da3dfb9"
 }
 
-variable "test_core_1_ami" {
-  description = "Default Node-1 AMI"
-  default = "ami-06aa0a01d289e025e"
+variable "test_core_ami" {
+  description = "Default Core AMI"
+  default = "ami-08755ca1546ebe1e7"
 }
 
-variable "test_core_2_ami" {
-  description = "Default Node-2 AMI"
-  default = "ami-026fedbbacb6e35f4"
-}
-
-variable "test_core_3_ami" {
-  description = "Default Node-3 AMI"
-  default = "ami-0d08632fc8e34d3a0"
-}
-
-variable "test_core_4_ami" {
-  description = "Default Node-4 AMI"
-  default = "ami-0111ad1f91718b63f"
-}
-
-variable "test_core_5_ami" {
-  description = "Default Node-5 AMI"
-  default = "ami-07415f0e195ef2ea4"
-}
 
 variable "horizon_1_ami" {
   description = "Default Horizon-1 AMI"
@@ -133,3 +119,34 @@ variable "test_watcher_core_1_ami" {
   default = "ami-0023e946265a2f4d5"
 }
 
+variable "horizon_instance_type" {
+  description = "Horizon instance type"
+  default = "c5.large"
+}
+
+
+variable "core_instance_type" {
+  description = "Core instance type"
+  default = "c5.large"
+}
+
+variable "watcher_instance_type" {
+  description = "Watcher instance type"
+  default = "c5.large"
+}
+variable "prometheus_instance_type" {
+  description = "Prometheus instance type"
+  default = "t3.medium"
+}
+
+variable "test_client_instance_type" {
+  description = "Test client instance type"
+  default = "t3.medium"
+}
+
+
+#Amount_of_cores
+variable "amount_of_cores" {
+  description = "Amount of cores"
+  default = "5"
+}

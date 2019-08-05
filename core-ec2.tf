@@ -1,9 +1,17 @@
 ###########################
 # EC2 Prometheus Server   #
 ###########################
+//todo: extract promethues to a different file, make optional for future production support
+// todo: allow creation of a single env for production maintenance
+
+locals {
+  timestamp_sanitized = formatdate("YYYY-MM-DD-hh:mm", timestamp())
+}
+
+
 resource "aws_instance" "prometheus_server" {
    ami = "${var.prometheus}"
-   instance_type = "t3.medium"
+   instance_type = "${var.prometheus_instance_type}"
    key_name = "${aws_key_pair.default.id}"
    subnet_id = "${aws_subnet.private-subnet.id}"
    vpc_security_group_ids = ["${aws_security_group.stellar-sg.id}"]
@@ -16,18 +24,24 @@ root_block_device {
   }
 
   tags = {
+    //todo: add environment to tag
+    //todo: add owner (user who created the environemnt)?
+    //todo: add deletion time?
+    Environment = "${var.SUFFIX}"
+    Created = "${local.timestamp_sanitized}"
     Name = "Promehteus-Server-${var.SUFFIX}"
   }
 }
 ############################
 
+//todo: extract stellar-load-testing client to a different file, make optional for future production support
 
 ###################################
 # EC2 stellar-load-testing client #
 ##################################
 resource "aws_instance" "test-load-client-1" {
    ami = "${var.test_load_client_ami}"
-   instance_type = "t3.medium"
+   instance_type = "${var.test_client_instance_type}"
    key_name = "${aws_key_pair.default.id}"
    subnet_id = "${aws_subnet.private-subnet.id}"
    vpc_security_group_ids = ["${aws_security_group.stellar-sg.id}"]
@@ -40,6 +54,8 @@ root_block_device {
   }
 
   tags = {
+    Environment = "${var.SUFFIX}"
+    Created = "${local.timestamp_sanitized}"
     Name = "test-load-client-1-${var.SUFFIX}"
   }
 }
@@ -50,8 +66,9 @@ root_block_device {
 #################
 resource "aws_instance" "test-horizon-1" {
    ami = "${var.horizon_1_ami}"
-   instance_type = "c5.large"
+   instance_type = "${var.horizon_instance_type}"
    key_name = "${aws_key_pair.default.id}"
+    //todo: replace instance configuration in user-data with Ansible
    user_data = <<-EOF
    #!/usr/bin/env bash
    sudo rm -rf /data/postgresql
@@ -74,10 +91,12 @@ root_block_device {
   }
 
   tags = {
+    Environment = "${var.SUFFIX}"
+    Created = "${local.timestamp_sanitized}"
     Name = "test-horizon-1-${var.SUFFIX}"
   }
 }
-
+//todo: attach EBS from snapshot
 
 
 
@@ -87,9 +106,17 @@ root_block_device {
 ##################
 # Define stellar inside the private subnet
 
-resource "aws_instance" "test-core-1" {
-   ami = "${var.test_core_1_ami}"
-   instance_type = "c5.large"
+//variable "cores_name" {
+//  description = "Cores names"
+//  type        = list(number)
+//  default     = [1,2,3,4,5]
+//}
+
+
+resource "aws_instance" "test-cores" {
+   count = "${var.amount_of_cores}"
+   ami = "${var.test_core_ami}"
+   instance_type = "${var.core_instance_type}"
    key_name = "${aws_key_pair.default.id}"
    user_data = <<-EOF
    #!/usr/bin/env bash
@@ -116,149 +143,19 @@ root_block_device {
   }
 
   tags = {
-    Name = "test-core-1-${var.SUFFIX}"
+    Environment = "${var.SUFFIX}"
+    Created = "${local.timestamp_sanitized}"
+    Name = "test-core-${count.index}-${var.SUFFIX}"
   }
 }
-
-
-resource "aws_instance" "test-core-2" {
-   ami = "${var.test_core_2_ami}"
-   instance_type = "c5.large"
-   key_name = "${aws_key_pair.default.id}"
-   user_data = <<-EOF
-   #!/usr/bin/env bash
-   sudo rm -rf /data/postgresql
-   sudo rm -rf /data/stellar-core/buckets
-   sudo docker-compose -f /data/docker-compose.yml up -d stellar-core-db
-   sleep 14
-   sudo docker-compose -f /data/docker-compose.yml run --rm stellar-core --newdb
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml run --rm stellar-core --forcescp
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml run --rm stellar-core --newhist$
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml up -d
-   EOF
-   subnet_id = "${aws_subnet.private-subnet.id}"
-   vpc_security_group_ids = ["${aws_security_group.stellar-sg.id}"]
-   associate_public_ip_address = false
-   source_dest_check = false
-   #iam_instance_profile = "${aws_iam_instance_profile.stellar_profile.name}"
-root_block_device {
-    volume_size = "8"
-    volume_type = "standard"
-  }
-
-  tags = {
-    Name = "test-core-2-${var.SUFFIX}"
-  }
-}
-
-resource "aws_instance" "test-core-3" {
-   ami = "${var.test_core_3_ami}"
-   instance_type = "c5.large"
-   key_name = "${aws_key_pair.default.id}"
-   user_data = <<-EOF
-   #!/usr/bin/env bash
-   sudo rm -rf /data/postgresql
-   sudo rm -rf /data/stellar-core/buckets
-   sudo docker-compose -f /data/docker-compose.yml up -d stellar-core-db
-   sleep 14
-   sudo docker-compose -f /data/docker-compose.yml run --rm stellar-core --newdb
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml run --rm stellar-core --forcescp
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml run --rm stellar-core --newhist$
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml up -d
-   EOF
-   subnet_id = "${aws_subnet.private-subnet.id}"
-   vpc_security_group_ids = ["${aws_security_group.stellar-sg.id}"]
-   associate_public_ip_address = false
-   source_dest_check = false
-   #iam_instance_profile = "${aws_iam_instance_profile.stellar_profile.name}"
-root_block_device {
-    volume_size = "8"
-    volume_type = "standard"
-  }
-
-  tags = {
-    Name = "test-core-3-${var.SUFFIX}"
-  }
-}
-
-resource "aws_instance" "test-core-4" {
-   ami = "${var.test_core_4_ami}"
-   instance_type = "c5.large"
-   key_name = "${aws_key_pair.default.id}"
-   user_data = <<-EOF
-   #!/usr/bin/env bash
-   sudo rm -rf /data/postgresql
-   sudo rm -rf /data/stellar-core/buckets
-   sudo docker-compose -f /data/docker-compose.yml up -d stellar-core-db
-   sleep 14
-   sudo docker-compose -f /data/docker-compose.yml run --rm stellar-core --newdb
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml run --rm stellar-core --forcescp
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml run --rm stellar-core --newhist$
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml up -d
-   EOF
-   subnet_id = "${aws_subnet.private-subnet.id}"
-   vpc_security_group_ids = ["${aws_security_group.stellar-sg.id}"]
-   associate_public_ip_address = false
-   source_dest_check = false
-   #iam_instance_profile = "${aws_iam_instance_profile.stellar_profile.name}"
-root_block_device {
-    volume_size = "8"
-    volume_type = "standard"
-  }
-
-  tags = {
-    Name = "test-core-4-${var.SUFFIX}"
-  }
-}
-
-resource "aws_instance" "test-core-5" {
-   ami = "${var.test_core_5_ami}"
-   instance_type = "c5.large"
-   key_name = "${aws_key_pair.default.id}"
-   user_data = <<-EOF
-   #!/usr/bin/env bash
-   sudo rm -rf /data/postgresql
-   sudo rm -rf /data/stellar-core/buckets
-   sudo docker-compose -f /data/docker-compose.yml up -d stellar-core-db
-   sleep 14
-   sudo docker-compose -f /data/docker-compose.yml run --rm stellar-core --newdb
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml run --rm stellar-core --forcescp
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml run --rm stellar-core --newhist$
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml up -d
-   EOF
-   subnet_id = "${aws_subnet.private-subnet.id}"
-   vpc_security_group_ids = ["${aws_security_group.stellar-sg.id}"]
-   associate_public_ip_address = false
-   source_dest_check = false
-   #iam_instance_profile = "${aws_iam_instance_profile.stellar_profile.name}"
-root_block_device {
-    volume_size = "8"
-    volume_type = "standard"
-  }
-
-  tags = {
-    Name = "test-core-5-${var.SUFFIX}"
-  }
-}
+//todo: attach EBS from snapshot
 
 ######################
 #  Watcher Core      #
 #####################
 resource "aws_instance" "test-watcher-core-1" {
    ami = "${var.test_watcher_core_1_ami}"
-   instance_type = "c5.large"
+   instance_type = "${var.watcher_instance_type}"
    key_name = "${aws_key_pair.default.id}"
    user_data = <<-EOF
    #!/usr/bin/env bash
@@ -285,6 +182,8 @@ root_block_device {
   }
 
   tags = {
+    Environment = "${var.SUFFIX}"
+    Created = "${local.timestamp_sanitized}"
     Name = "test-watcher-core-1-${var.SUFFIX}"
   }
 }
@@ -303,6 +202,8 @@ resource "aws_lb" "node1-nlb" {
   enable_deletion_protection = false
 
   tags = {
+    Environment = "${var.SUFFIX}"
+    Created = "${local.timestamp_sanitized}"
     Environment = "production"
   }
 }
@@ -344,6 +245,8 @@ resource "aws_lb" "node2-nlb" {
   enable_deletion_protection = false
 
   tags = {
+        //todo: extract env name to variable, use cross wide in all machines tags
+
     Environment = "production"
   }
 }
