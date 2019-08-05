@@ -7,6 +7,13 @@ resource "aws_security_group" "stellar-sg" {
   description = "Allow incoming HTTP connections & SSH access"
 
   ingress {
+      from_port = 0
+      to_port = 0
+      protocol = -1
+      self = true
+  }
+
+  ingress {
     from_port = 9090
     to_port = 9090
     protocol = "tcp"
@@ -55,6 +62,13 @@ resource "aws_security_group" "stellar-sg" {
     protocol = "tcp"
     cidr_blocks =  ["10.100.0.0/16"]
     #security_groups = ["${aws_security_group.bastion-sg.id}"]
+  }
+
+  egress {
+      from_port = 0
+      to_port = 0
+      protocol = -1
+      self = true
   }
 
   egress {
