@@ -125,7 +125,7 @@ variable "horizon_1_ami" {
 
 variable "test_load_client_ami" {
   description = "Load Test AMI"
-  default = "ami-0f38a2d9e036ded9e"
+  default = "ami-0b7ed9f0d70800f6f"
 }
 
 variable "test_watcher_core_1_ami" {
