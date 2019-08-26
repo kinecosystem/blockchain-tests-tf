@@ -55,7 +55,7 @@ resource "aws_instance" "test-horizon-1" {
    key_name = "${aws_key_pair.default.id}"
    #user_data = "${file("nodes/horizondata.txt")}"
    user_data = <<-EOF
-   !/usr/bin/env bash
+   #!/usr/bin/env bash
    sudo rm -rf /data/postgresql
    sudo rm -rf /data/horizon-volumes
    sudo docker-compose -f /data/docker-compose.yml down
