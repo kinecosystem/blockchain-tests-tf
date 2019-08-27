@@ -7,7 +7,7 @@ data "aws_ebs_snapshot" "ebs_volume" {
   owners      = ["self"]
 
   filter {
-    name   = "tag:Role"
-    values = ["Backup"]
+    name   = "tag:Rule"
+    values = ["Lifecycle"]
   }
 }
