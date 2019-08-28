@@ -5,7 +5,7 @@ resource "aws_instance" "core-test-fed" {
    ami  = "${var.test_core_ami}"
    #ami = "${data.aws_ami.latest-ubuntu.id}"
    user_data = "${file("userdata-core.txt")}"
-   instance_type = "c5.large"
+   instance_type = "${var.instance_type}"
    key_name = "${aws_key_pair.default.id}"
    subnet_id = "${var.subnetdeploy}"
    vpc_security_group_ids = ["${var.sgdeploy}"]
