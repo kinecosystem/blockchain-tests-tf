@@ -58,7 +58,7 @@ variable "DB_IDENTIFIER" { default = "stellar-core-db" }
 
 variable "latestcoresnap" { default = "snap-0484609ba04097414" }
 
-variable "instance_type" { default = "r5.2xlarge" }
+variable "core_instance_type" { default = "r5.4xlarge" }
 
 #####################
 # Key to launch EC2 #
