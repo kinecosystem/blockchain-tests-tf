@@ -5,7 +5,7 @@ resource "aws_instance" "horizon-test-fed" {
    ami  = "${var.horizon_1_ami}"
    #ami = "${data.aws_ami.latest-ubuntu.id}"
    user_data = "${file("userdata-core.txt")}"
-   instance_type = "c5.large"
+   instance_type = "c5.2xlarge"
    key_name = "${aws_key_pair.default.id}"
    subnet_id = "${var.subnetdeploy}"
    vpc_security_group_ids = ["${var.sgdeploy-horizon}"]
