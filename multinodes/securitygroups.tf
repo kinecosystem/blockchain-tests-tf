@@ -112,6 +112,14 @@ resource "aws_security_group" "stellar-sg" {
   }
 
   egress {
+    from_port = 8000
+    to_port = 8000
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Prometheus-One Metrics Forward"
+  }
+
+  egress {
     from_port = 11625
     to_port = 11626
     protocol = "tcp"
