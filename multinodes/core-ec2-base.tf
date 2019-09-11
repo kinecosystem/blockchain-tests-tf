@@ -53,18 +53,18 @@ resource "aws_instance" "test-horizon-1" {
    ami = "${var.horizon_1_ami}"
    instance_type = "c5.large"
    key_name = "${aws_key_pair.default.id}"
-   #user_data = "${file("nodes/horizondata.txt")}"
-   user_data = <<-EOF
+   user_data = "${file("nodes/horizondata.txt")}"
+   #user_data = <<-EOF
    #!/usr/bin/env bash
-   sudo rm -rf /data/postgresql
-   sudo rm -rf /data/horizon-volumes
-   sudo docker-compose -f /data/docker-compose.yml down
-   sudo docker-compose -f /data/docker-compose.yml up -d horizon-db
-   sleep 14
-   sudo docker-compose -f /data/docker-compose.yml run --rm horizon db init
-   sleep 2
-   sudo docker-compose -f /data/docker-compose.yml up -d
-   EOF
+   #sudo rm -rf /data/postgresql
+   #sudo rm -rf /data/horizon-volumes
+   #sudo docker-compose -f /data/docker-compose.yml down
+   #sudo docker-compose -f /data/docker-compose.yml up -d horizon-db
+   #sleep 14
+   #sudo docker-compose -f /data/docker-compose.yml run --rm horizon db init
+   #sleep 2
+   #sudo docker-compose -f /data/docker-compose.yml up -d
+   #EOF
    subnet_id = "${aws_subnet.private-subnet.id}"
    vpc_security_group_ids = ["${aws_security_group.stellar-sg.id}"]
    associate_public_ip_address = false
